@@ -1,4 +1,5 @@
 // import express from 'express'; // ES2015 modules, not supported by default by all versions of node
+const uuid = require("uuid").v4;
 const express = require("express"); // CommonJS modules
 
 const server = express();
@@ -13,11 +14,11 @@ server.get("/", (req, res) => {
 
 // see a list of lessons { id: 1, name: 'introduction to node' }
 let users = [
-    { id: 1, name: "Brad", bio: "Fitness Trainer" },
-    { id: 2, name: "John", bio: "Web Developer at Facebook" },
-    { id: 3, name: "Ashley", bio: "Hair Stylist" },
+    { id: uuid(), name: "Brad", bio: "Fitness Trainer" },
+    { id: uuid(), name: "John", bio: "Web Developer at Facebook" },
+    { id: uuid(), name: "Ashley", bio: "Hair Stylist" },
 ];
-let nextId = 3; // hack, not needed when we start using databases
+// let nextId = 4; // hack, not needed when we start using databases
 
 // GET /users
 server.get("/users", (req, res) => {
@@ -29,7 +30,7 @@ server.post("/users", function (req, res) {
     // client will axios.post('https://api.com/users', data);
     const data = req.body;
 
-    users.push({ id: nextId++, ...data });
+    users.push({ id: uuid(), ...data });
 
     res.status(201).json({ data: users });
 });
@@ -37,7 +38,7 @@ server.post("/users", function (req, res) {
 server.put("/users/:id", (req, res) => {
     // find the lesson
     // anything read from the URL will be a string, we need to convert it to a number
-    const id = Number(req.params.id);
+    const id = req.params.id;
     const changes = req.body;
 
     const found = users.find(l => l.id === id);
@@ -48,13 +49,13 @@ server.put("/users/:id", (req, res) => {
 
         res.status(200).json({ data: users });
     } else {
-        res.status(404).json({ message: "Lesson not found" });
+        res.status(404).json({ message: "User not found" });
     }
     // resturn the users array
 });
 
 server.delete("/users/:id", (req, res) => {
-    const id = Number(req.params.id);
+    const id = req.params.id;
 
     users = users.filter(l => l.id !== id);
 
